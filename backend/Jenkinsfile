@@ -54,7 +54,7 @@ pipeline{
                 withAWS(region: 'us-east-1', credentials: 'aws-creds-dev') {
                     sh """
                         aws eks update-kubeconfig --region ${region} --name ${project}-${environment}
-
+                        echo "pwd : ${pwd}"
                         helm upgrade --install ${component} ./helm \
                         -f ./backend-values.yml
                         --set image.repository=${account_id}.dkr.ecr.${region}.amazonaws.com/${project}/${environment}/${component} \
