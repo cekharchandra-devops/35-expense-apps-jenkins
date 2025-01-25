@@ -57,8 +57,8 @@ pipeline{
                             aws eks update-kubeconfig --region ${region} --name ${project}-${environment}
                             helm upgrade --install ${component} ./helm \
                             -f ./backend-values.yml \
-                            --set image.repository=${account_id}.dkr.ecr.${region}.amazonaws.com/${project}/${environment}/${component} \
-                            --set image.tag=${appVersion} 
+                            --set deployment.image.prefix=${account_id}.dkr.ecr.${region}.amazonaws.com/${project}/${environment}/${component} \
+                            --set deployment.image.tag=${appVersion} 
                         """
                     }
                 }
