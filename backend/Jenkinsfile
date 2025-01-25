@@ -20,7 +20,7 @@ pipeline{
         stage('read the version'){
             steps{
                 script{
-                    sh 'cd backend/backend'
+                    sh 'cd backend'
                     def packageJson = readJSON file: 'package.json'
                     appVersion = packageJson.version
                 }
@@ -28,14 +28,14 @@ pipeline{
         }
          stage('install dependencies'){
             steps{
-                sh 'cd backend/backend'
+                sh 'cd backend'
                 sh 'npm install'
             }
         }
         stage('docker image'){
            steps{
              sh """
-                cd backend/backend
+                cd backend
                 aws ecr get-login-password --region $region | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.us-east-1.amazonaws.com
                 
                 docker build -t ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
@@ -46,6 +46,11 @@ pipeline{
                 
             """
            }
+        }
+    }
+    post {
+        always {
+            deleteDir()
         }
     }
 }
