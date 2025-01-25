@@ -38,7 +38,7 @@ pipeline{
         stage('docker image'){
            steps{
                 withAWS(region: 'us-east-1', credentials: 'aws-creds-dev') {
-                    dir('backend') {
+                    dir('frontend') {
                         sh """
                             aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.${region}.amazonaws.com
                             docker build -t ${account_id}.dkr.ecr.${region}.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
@@ -52,7 +52,7 @@ pipeline{
         stage('deploy application'){
             steps {
                 withAWS(region: 'us-east-1', credentials: 'aws-creds-dev') {
-                    dir('backend'){
+                    dir('frontend'){
                         sh """
                             aws eks update-kubeconfig --region ${region} --name ${project}-${environment}
                             helm upgrade --install ${component} ./helm \
