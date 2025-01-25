@@ -20,32 +20,29 @@ pipeline{
         stage('read the version'){
             steps{
                 script{
-                    sh 'cd backend/backend'
-                    def packageJson = readJSON file: 'package.json'
+                    def packageJson = readJSON file: 'backup/package.json'
                     appVersion = packageJson.version
+                    echo "App Version: ${appVersion}"
                 }
             }
         }
          stage('install dependencies'){
             steps{
-                sh 'cd backend/backend'
-                sh 'npm install'
+                dir('backend') {
+                    sh 'npm install'
+                }
             }
         }
         stage('docker image'){
            steps{
-             sh """
-                cd backend/backend
-                aws ecr get-login-password --region $region | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.us-east-1.amazonaws.com
-                
-                docker build -t ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
-                
-                docker images
-                
-                docker push ${account_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
-                
-            """
-           }
+            dir('backend') {
+                sh """
+                    aws ecr get-login-password --region $region | docker login --username AWS --password-stdin ${account_id}.dkr.ecr.$region.amazonaws.com
+                    docker build -t ${account_id}.dkr.ecr.$region.amazonaws.com/${project}/${environment}/${component}:${appVersion} .
+                    docker images
+                    docker push ${account_id}.dkr.ecr.$region.amazonaws.com/${project}/${environment}/${component}:${appVersion}
+                """
+            }
         }
     }
     post {
