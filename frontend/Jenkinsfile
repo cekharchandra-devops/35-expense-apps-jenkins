@@ -28,13 +28,13 @@ pipeline{
                 }
             }
         }
-         stage('install dependencies'){
-            steps{
-                dir('backend') {
-                    sh 'npm install'
-                }
-            }
-        }
+        //  stage('install dependencies'){
+        //     steps{
+        //         dir('backend') {
+        //             sh 'npm install'
+        //         }
+        //     }
+        // }
         stage('docker image'){
            steps{
                 withAWS(region: 'us-east-1', credentials: 'aws-creds-dev') {
